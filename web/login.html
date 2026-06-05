@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>로그인 — WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">✦ WebBoard</div>
+      <h1 class="auth-title">로그인</h1>
+      <p class="auth-sub">계정에 로그인하여 게시판을 이용하세요</p>
+
+      <div id="alert"></div>
+
+      <form id="loginForm">
+        <div class="form-group">
+          <label class="form-label">아이디</label>
+          <input type="text" id="username" class="form-control" placeholder="아이디를 입력하세요" autofocus autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" id="password" class="form-control" placeholder="비밀번호를 입력하세요" autocomplete="current-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:.25rem;">로그인</button>
+      </form>
+
+      <p class="auth-footer">계정이 없으신가요? <a href="register.html">회원가입</a></p>
+
+      <div class="divider"></div>
+      <p style="font-size:.8rem;color:var(--text-muted);text-align:center;">
+        테스트 계정: <strong>admin</strong> / <strong>admin123</strong>
+      </p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    if (Auth.isLoggedIn()) location.href = 'board.html';
+
+    document.getElementById('loginForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      if (Auth.login(username, password)) {
+        const redirect = sessionStorage.getItem('redirect');
+        sessionStorage.removeItem('redirect');
+        location.href = redirect || 'board.html';
+      } else {
+        document.getElementById('alert').innerHTML =
+          `<div class="alert alert-error">아이디 또는 비밀번호가 올바르지 않습니다.</div>`;
+      }
+    });
+  </script>
+</body>
+</html>

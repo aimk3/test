@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>글쓰기 — WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="write-page">
+    <div class="container">
+      <div style="margin-bottom:1rem;">
+        <a href="board.html" class="btn btn-ghost btn-sm">← 목록으로</a>
+      </div>
+      <div class="write-card animate-slide-up">
+        <div class="write-header">
+          <h2 style="font-size:1.2rem;font-weight:700;">✏️ 새 글 작성</h2>
+          <p style="font-size:.875rem;color:var(--text-muted);margin-top:.25rem;">자유롭게 생각을 공유해보세요.</p>
+        </div>
+
+        <div id="alert" style="padding:1rem 2rem 0;"></div>
+
+        <div class="write-body">
+          <div class="form-group">
+            <label class="form-label">제목</label>
+            <input type="text" id="title" class="write-title-input" placeholder="제목을 입력해주세요" maxlength="100" autofocus>
+            <div style="font-size:.75rem;color:var(--text-light);text-align:right;margin-top:.3rem;">
+              <span id="title-count">0</span> / 100
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">내용</label>
+            <textarea id="content" class="write-content-input" placeholder="내용을 자유롭게 작성해주세요..."></textarea>
+          </div>
+        </div>
+
+        <div class="write-actions">
+          <button class="btn btn-ghost" onclick="history.back()">취소</button>
+          <button class="btn btn-primary" onclick="submitPost()">게시하기 →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    if (!Auth.guard()) throw new Error('not logged in');
+
+    const titleInput = document.getElementById('title');
+    const titleCount = document.getElementById('title-count');
+    titleInput.addEventListener('input', () => titleCount.textContent = titleInput.value.length);
+    titleInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('content').focus(); }
+    });
+
+    function submitPost() {
+      const title = titleInput.value.trim();
+      const content = document.getElementById('content').value.trim();
+      const alertEl = document.getElementById('alert');
+
+      if (!title) {
+        alertEl.innerHTML = `<div class="alert alert-error">제목을 입력해주세요.</div>`;
+        titleInput.focus(); return;
+      }
+      if (!content) {
+        alertEl.innerHTML = `<div class="alert alert-error">내용을 입력해주세요.</div>`;
+        document.getElementById('content').focus(); return;
+      }
+
+      const post = Posts.create({ title, content });
+      location.href = `post.html?id=${post.id}`;
+    }
+  </script>
+</body>
+</html>

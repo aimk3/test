@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 — WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="post-detail">
+    <div class="container">
+      <div id="content"></div>
+    </div>
+  </div>
+
+  <footer class="footer">
+    <p>© 2026 WebBoard — Made with ✦ Claude Code</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    if (!Auth.guard()) throw new Error('not logged in');
+
+    const id = getParam('id');
+    const post = id ? Posts.getById(id) : null;
+
+    if (!post) {
+      document.getElementById('content').innerHTML = `
+        <div class="board-empty" style="margin-top:2rem;">
+          <div class="empty-icon">🔍</div>
+          <p>게시글을 찾을 수 없습니다.</p>
+          <a href="board.html" class="btn btn-primary" style="margin-top:1.5rem;">← 목록으로</a>
+        </div>`;
+    } else {
+      Posts.incrementViews(id);
+      const user = Auth.getCurrentUser();
+      const isAuthor = user && user.id === post.authorId;
+
+      document.title = `${post.title} — WebBoard`;
+      renderPost();
+    }
+
+    function getComments() { return Comments.getByPostId(id); }
+
+    function renderPost() {
+      const comments = getComments();
+      document.getElementById('content').innerHTML = `
+        <div style="margin-bottom:1rem;">
+          <a href="board.html" class="btn btn-ghost btn-sm">← 목록으로</a>
+        </div>
+
+        <div class="post-card animate-slide-up">
+          <div class="post-card-header">
+            <h1 class="post-card-title">${escapeHtml(post.title)}</h1>
+            <div class="post-card-meta">
+              <span>👤 ${escapeHtml(post.authorName)}</span>
+              <span>🕒 ${formatDateFull(post.createdAt)}</span>
+              <span>👁 조회 ${post.views + 1}회</span>
+              <span>💬 댓글 <span id="comment-badge">${comments.length}</span>개</span>
+            </div>
+          </div>
+          <div class="post-card-body">
+            <p class="post-content">${escapeHtml(post.content)}</p>
+          </div>
+          <div class="post-card-footer">
+            <a href="board.html" class="btn btn-ghost btn-sm">← 목록</a>
+            <a href="write.html" class="btn btn-outline btn-sm">✏️ 새 글 작성</a>
+            ${isAuthor(post) ? `<button class="btn btn-danger btn-sm" onclick="deletePost()">삭제</button>` : ''}
+          </div>
+        </div>
+
+        <div class="comments-section">
+          <div class="comments-header">
+            💬 댓글 <span class="count" id="comment-count">${comments.length}</span>
+          </div>
+          <div id="comment-list"></div>
+          <div class="comment-form">
+            <div class="comment-form-title">💬 댓글 작성</div>
+            <textarea id="comment-input" placeholder="댓글을 입력하세요... (Ctrl+Enter로 등록)"></textarea>
+            <div style="display:flex;justify-content:flex-end;">
+              <button class="btn btn-primary btn-sm" onclick="addComment()">댓글 등록</button>
+            </div>
+          </div>
+        </div>
+      `;
+      renderCommentList(comments);
+    }
+
+    function isAuthor(post) {
+      const user = Auth.getCurrentUser();
+      return user && user.id === post.authorId;
+    }
+
+    function renderCommentList(comments) {
+      const el = document.getElementById('comment-list');
+      if (!comments.length) {
+        el.innerHTML = `<div class="comment-empty">아직 댓글이 없습니다. 첫 댓글을 남겨보세요! 👋</div>`;
+        return;
+      }
+      el.innerHTML = `<div class="comment-list animate-fade-in">` +
+        comments.map(c => `
+          <div class="comment-item">
+            <div class="comment-meta">
+              <span class="comment-author">👤 ${escapeHtml(c.authorName)}</span>
+              <span>${formatDate(c.createdAt)}</span>
+            </div>
+            <div class="comment-body">${escapeHtml(c.content)}</div>
+          </div>
+        `).join('') +
+        `</div>`;
+    }
+
+    function addComment() {
+      const input = document.getElementById('comment-input');
+      const text = input.value.trim();
+      if (!text) { input.focus(); return; }
+      Comments.add(id, text);
+      input.value = '';
+      const comments = getComments();
+      renderCommentList(comments);
+      document.getElementById('comment-count').textContent = comments.length;
+      if (document.getElementById('comment-badge'))
+        document.getElementById('comment-badge').textContent = comments.length;
+    }
+
+    function deletePost() {
+      if (!confirm('정말 이 게시글을 삭제하시겠습니까?')) return;
+      Posts.delete(id);
+      location.href = 'board.html';
+    }
+
+    document.addEventListener('keydown', e => {
+      if (e.ctrlKey && e.key === 'Enter') addComment();
+    });
+  </script>
+</body>
+</html>

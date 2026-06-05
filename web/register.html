@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원가입 — WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">✦ WebBoard</div>
+      <h1 class="auth-title">회원가입</h1>
+      <p class="auth-sub">새 계정을 만들어 게시판에 참여하세요</p>
+
+      <div id="alert"></div>
+
+      <form id="registerForm">
+        <div class="form-group">
+          <label class="form-label">닉네임</label>
+          <input type="text" id="name" class="form-control" placeholder="사용할 닉네임을 입력하세요" autofocus>
+        </div>
+        <div class="form-group">
+          <label class="form-label">아이디</label>
+          <input type="text" id="username" class="form-control" placeholder="로그인에 사용할 아이디" autocomplete="username">
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호</label>
+          <input type="password" id="password" class="form-control" placeholder="비밀번호 (6자 이상)" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label class="form-label">비밀번호 확인</label>
+          <input type="password" id="confirm" class="form-control" placeholder="비밀번호를 다시 입력하세요" autocomplete="new-password">
+        </div>
+        <button type="submit" class="btn btn-primary btn-block" style="margin-top:.25rem;">가입하기</button>
+      </form>
+
+      <p class="auth-footer">이미 계정이 있으신가요? <a href="login.html">로그인</a></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    if (Auth.isLoggedIn()) location.href = 'board.html';
+
+    document.getElementById('registerForm').addEventListener('submit', e => {
+      e.preventDefault();
+      const alertEl = document.getElementById('alert');
+      const name = document.getElementById('name').value.trim();
+      const username = document.getElementById('username').value.trim();
+      const password = document.getElementById('password').value;
+      const confirm = document.getElementById('confirm').value;
+
+      if (!name || !username || !password || !confirm) {
+        alertEl.innerHTML = `<div class="alert alert-error">모든 항목을 입력해주세요.</div>`; return;
+      }
+      if (username.length < 3) {
+        alertEl.innerHTML = `<div class="alert alert-error">아이디는 3자 이상이어야 합니다.</div>`; return;
+      }
+      if (password.length < 6) {
+        alertEl.innerHTML = `<div class="alert alert-error">비밀번호는 6자 이상이어야 합니다.</div>`; return;
+      }
+      if (password !== confirm) {
+        alertEl.innerHTML = `<div class="alert alert-error">비밀번호가 일치하지 않습니다.</div>`; return;
+      }
+
+      const result = Auth.register({ username, password, name });
+      if (!result.ok) {
+        alertEl.innerHTML = `<div class="alert alert-error">${result.msg}</div>`; return;
+      }
+      Auth.login(username, password);
+      location.href = 'board.html';
+    });
+  </script>
+</body>
+</html>

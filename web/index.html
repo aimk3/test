@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <main>
+    <section class="hero">
+      <div class="hero-content">
+        <div class="hero-badge">✦ Claude Code로 만든 게시판</div>
+        <h1 class="hero-title">자유롭게 <span>소통</span>하세요</h1>
+        <p class="hero-sub">WebBoard에서 생각을 나누고, 지식을 공유하고, 새로운 사람들을 만나보세요.</p>
+        <div class="hero-actions" id="cta"></div>
+      </div>
+    </section>
+
+    <div class="container">
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">📝</div>
+          <h3>자유 글쓰기</h3>
+          <p>어떤 주제든 자유롭게 글을 작성하고 생각을 공유할 수 있어요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">💬</div>
+          <h3>실시간 댓글</h3>
+          <p>게시글에 댓글을 남기며 다른 사람들과 활발하게 소통하세요.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔍</div>
+          <h3>빠른 검색</h3>
+          <p>원하는 글을 제목, 내용, 작성자로 빠르게 찾아볼 수 있어요.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 WebBoard — Made with ✦ Claude Code</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    const cta = document.getElementById('cta');
+    if (Auth.isLoggedIn()) {
+      cta.innerHTML = `<a href="board.html" class="btn btn-white btn-lg">게시판 바로가기 →</a>`;
+    } else {
+      cta.innerHTML = `
+        <a href="login.html" class="btn btn-white btn-lg">로그인하기</a>
+        <a href="register.html" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.3);">회원가입</a>
+      `;
+    }
+  </script>
+</body>
+</html>

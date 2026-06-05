@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 — WebBoard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="nav"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <div class="page-header-inner">
+        <div>
+          <h1 class="page-title">📋 게시판</h1>
+          <p class="page-sub" id="post-count"></p>
+        </div>
+        <div style="display:flex;gap:.75rem;align-items:center;flex-wrap:wrap;">
+          <div class="board-search">
+            <span class="board-search-icon">🔍</span>
+            <input type="text" id="search" placeholder="검색어를 입력하세요">
+          </div>
+          <a href="write.html" class="btn btn-primary" id="write-btn" style="display:none;">✏️ 글쓰기</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <div class="container" style="padding-bottom:3rem;">
+      <div id="post-list"></div>
+    </div>
+  </main>
+
+  <footer class="footer">
+    <p>© 2026 WebBoard — Made with ✦ Claude Code</p>
+  </footer>
+
+  <script src="app.js"></script>
+  <script>
+    renderNavbar(document.getElementById('nav'));
+    if (Auth.isLoggedIn()) document.getElementById('write-btn').style.display = 'inline-flex';
+
+    const allPosts = Posts.getAll();
+
+    function render(posts) {
+      const el = document.getElementById('post-list');
+      document.getElementById('post-count').textContent = `총 ${posts.length}개의 게시글`;
+
+      if (!posts.length) {
+        el.innerHTML = `
+          <div class="board-empty">
+            <div class="empty-icon">📭</div>
+            <p>검색 결과가 없거나 아직 게시글이 없습니다.<br>첫 번째 글을 작성해보세요!</p>
+            ${Auth.isLoggedIn() ? `<a href="write.html" class="btn btn-primary" style="margin-top:1.5rem;">✏️ 글쓰기</a>` : ''}
+          </div>`;
+        return;
+      }
+
+      el.innerHTML = `<div class="post-list animate-fade-in">` +
+        posts.map((p, i) => `
+          <div class="post-item" onclick="location.href='post.html?id=${p.id}'">
+            <div class="post-num">${i + 1}</div>
+            <div style="min-width:0;">
+              <div class="post-title-text">${escapeHtml(p.title)}</div>
+              <div class="post-meta-row">
+                <span>👤 ${escapeHtml(p.authorName)}</span>
+                <span>🕒 ${formatDate(p.createdAt)}</span>
+              </div>
+            </div>
+            <div class="post-views">👁 ${p.views}</div>
+          </div>
+        `).join('') +
+        `</div>`;
+    }
+
+    render(allPosts);
+
+    document.getElementById('search').addEventListener('input', e => {
+      const q = e.target.value.toLowerCase();
+      render(q
+        ? allPosts.filter(p =>
+            p.title.toLowerCase().includes(q) ||
+            p.content.toLowerCase().includes(q) ||
+            p.authorName.toLowerCase().includes(q))
+        : allPosts
+      );
+    });
+  </script>
+</body>
+</html>
