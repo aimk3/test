@@ -3,59 +3,48 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebBoard</title>
+  <title>마음결 | AI 상담</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <div id="nav"></div>
 
-  <main>
-    <section class="hero">
-      <div class="hero-content">
-        <div class="hero-badge">✦ Claude Code로 만든 게시판</div>
-        <h1 class="hero-title">자유롭게 <span>소통</span>하세요</h1>
-        <p class="hero-sub">WebBoard에서 생각을 나누고, 지식을 공유하고, 새로운 사람들을 만나보세요.</p>
-        <div class="hero-actions" id="cta"></div>
-      </div>
+  <main class="counsel-page">
+    <section class="counsel-intro">
+      <div class="eyebrow">AI COUNSELING SPACE</div>
+      <h1>마음이 복잡한 날,<br><span>천천히 이야기해요.</span></h1>
+      <p>정답을 서두르지 않는 대화. 지금 느끼는 감정을 편한 말로 적어주세요.</p>
+      <div class="care-note"><span>✦</span> 이 대화는 전문 상담을 대신하지 않아요. 위급한 상황이라면 112 또는 119에 연락하세요.</div>
     </section>
 
-    <div class="container">
-      <div class="features">
-        <div class="feature-card">
-          <div class="feature-icon">📝</div>
-          <h3>자유 글쓰기</h3>
-          <p>어떤 주제든 자유롭게 글을 작성하고 생각을 공유할 수 있어요.</p>
+    <section class="chat-shell" aria-label="AI 상담 채팅">
+      <div class="chat-header">
+        <div class="counsel-avatar">心</div>
+        <div>
+          <strong>마음결</strong>
+          <span><i></i> 지금 대화할 수 있어요</span>
         </div>
-        <div class="feature-card">
-          <div class="feature-icon">💬</div>
-          <h3>실시간 댓글</h3>
-          <p>게시글에 댓글을 남기며 다른 사람들과 활발하게 소통하세요.</p>
-        </div>
-        <div class="feature-card">
-          <div class="feature-icon">🔍</div>
-          <h3>빠른 검색</h3>
-          <p>원하는 글을 제목, 내용, 작성자로 빠르게 찾아볼 수 있어요.</p>
-        </div>
+        <button class="clear-chat" id="clear-chat" type="button" title="대화 초기화">↺</button>
       </div>
-    </div>
+      <div class="messages" id="messages" aria-live="polite"></div>
+      <div class="quick-prompts" id="quick-prompts">
+        <button type="button" data-prompt="오늘 하루가 유난히 힘들었어요.">오늘 하루가 힘들었어요</button>
+        <button type="button" data-prompt="요즘 잠을 잘 못 자고 있어요.">잠을 잘 못 자고 있어요</button>
+        <button type="button" data-prompt="누군가에게 속마음을 털어놓고 싶어요.">속마음을 털어놓고 싶어요</button>
+      </div>
+      <form class="chat-form" id="chat-form">
+        <textarea id="message-input" rows="1" maxlength="2000" placeholder="지금 마음은 어떤가요?" aria-label="상담 메시지"></textarea>
+        <button class="send-button" type="submit" title="메시지 보내기" aria-label="메시지 보내기">↑</button>
+      </form>
+      <div class="chat-status" id="chat-status">마음결은 비난 없이 듣고, 함께 정리해드려요.</div>
+    </section>
   </main>
 
   <footer class="footer">
-    <p>© 2026 WebBoard — Made with ✦ Claude Code</p>
+    <p>© 2026 마음결 · Groq powered</p>
   </footer>
 
   <script src="app.js"></script>
-  <script>
-    renderNavbar(document.getElementById('nav'));
-    const cta = document.getElementById('cta');
-    if (Auth.isLoggedIn()) {
-      cta.innerHTML = `<a href="board.html" class="btn btn-white btn-lg">게시판 바로가기 →</a>`;
-    } else {
-      cta.innerHTML = `
-        <a href="login.html" class="btn btn-white btn-lg">로그인하기</a>
-        <a href="register.html" class="btn btn-lg" style="background:rgba(255,255,255,.15);color:#fff;border:2px solid rgba(255,255,255,.3);">회원가입</a>
-      `;
-    }
-  </script>
+  <script src="chat.js"></script>
 </body>
 </html>
